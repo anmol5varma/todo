@@ -1,14 +1,13 @@
-import TodoDao from '../daos/todo.dao';
-import { parseJsonToFileContent, parseFileContentToJson } from '../utils/file.util';
+import { parseJsonToFileContent, parseFileContentToJson, FileReadWrite } from '../utils/file.util';
 
 class TodoService {
   static getAllTodos() {
-    const fileContent = TodoDao.readFileData();
+    const fileContent = FileReadWrite.readFileData();
     return parseFileContentToJson(fileContent);
   }
 
   static getTodo({ id }) {
-    const fileContent = TodoDao.readFileData();
+    const fileContent = FileReadWrite.readFileData();
     const allTodos = parseFileContentToJson(fileContent);
     const [result] = allTodos.filter((todo) => todo.id === id.toString());
     if (result) return result;
@@ -16,7 +15,7 @@ class TodoService {
   }
 
   static createTodo({ data }) {
-    const fileContent = TodoDao.readFileData();
+    const fileContent = FileReadWrite.readFileData();
     const allTodos = parseFileContentToJson(fileContent);
     let id;
     // get the next id in the sequence
@@ -31,12 +30,12 @@ class TodoService {
       createdAt: new Date().toUTCString(),
       updatedAt: new Date().toUTCString()
     };
-    TodoDao.writeDataToFile(parseJsonToFileContent(allTodos.concat(newTodo)));
+    FileReadWrite.writeDataToFile(parseJsonToFileContent(allTodos.concat(newTodo)));
     return newTodo;
   }
 
   static updateTodo({ id, data }) {
-    const fileContent = TodoDao.readFileData();
+    const fileContent = FileReadWrite.readFileData();
     let updatedTodo = null;
     const updatedTodos = parseFileContentToJson(fileContent).map((todo) => {
       const todoItem = { ...todo };
@@ -47,12 +46,12 @@ class TodoService {
       }
       return todoItem;
     });
-    if (updatedTodo !== null) TodoDao.writeDataToFile(parseJsonToFileContent(updatedTodos));
+    if (updatedTodo !== null) FileReadWrite.writeDataToFile(parseJsonToFileContent(updatedTodos));
     return updatedTodo;
   }
 
   static deleteTodo({ id }) {
-    const fileContent = TodoDao.readFileData();
+    const fileContent = FileReadWrite.readFileData();
     let deletedTodo = null;
     const updatedTodos = parseFileContentToJson(fileContent).filter((todo) => {
       if (todo.id === id) {
@@ -61,7 +60,7 @@ class TodoService {
       }
       return true;
     });
-    if (deletedTodo !== null) TodoDao.writeDataToFile(parseJsonToFileContent(updatedTodos));
+    if (deletedTodo !== null) FileReadWrite.writeDataToFile(parseJsonToFileContent(updatedTodos));
     return deletedTodo;
   }
 }
